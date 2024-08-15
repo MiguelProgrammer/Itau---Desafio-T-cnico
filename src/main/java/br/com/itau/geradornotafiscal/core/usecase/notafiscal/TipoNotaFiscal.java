@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface TipoNotaFiscal {
 
-    public List<ItemNotaFiscal> calcula(Pedido pedido, TipoPessoa tipoPessoa);
+    List<ItemNotaFiscal> calcula(Pedido pedido, TipoPessoa tipoPessoa);
 }

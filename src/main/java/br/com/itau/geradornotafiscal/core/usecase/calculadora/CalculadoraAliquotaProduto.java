@@ -8,20 +8,18 @@ import java.util.List;
 
 public class CalculadoraAliquotaProduto {
 
-    private List<ItemNotaFiscal> itemNotaFiscalList = new ArrayList<>();
-
     public List<ItemNotaFiscal> calcularAliquota(List<Item> items, double aliquotaPercentual) {
 
-        for (Item item : items) {
+        List<ItemNotaFiscal> itemNotaFiscalList = new ArrayList<>();
 
-            double valorTributo = item.getValorUnitario() * aliquotaPercentual;
+        for (Item item : items) {
 
             ItemNotaFiscal itemNotaFiscal = ItemNotaFiscal.builder()
                     .idItem(item.getIdItem())
                     .descricao(item.getDescricao())
                     .valorUnitario(item.getValorUnitario())
                     .quantidade(item.getQuantidade())
-                    .valorTributoItem(valorTributo)
+                    .valorTributoItem(item.getValorUnitario() * aliquotaPercentual)
                     .build();
 
             itemNotaFiscalList.add(itemNotaFiscal);

@@ -1,4 +1,4 @@
-package br.com.itau.geradornotafiscal.core.usecase.notafiscal.estrategia;
+package br.com.itau.geradornotafiscal.core.usecase.notafiscal.pessoastrategy;
 
 import br.com.itau.geradornotafiscal.core.domain.enums.RegimeTributacaoPJ;
 import br.com.itau.geradornotafiscal.core.domain.enums.TipoPessoa;

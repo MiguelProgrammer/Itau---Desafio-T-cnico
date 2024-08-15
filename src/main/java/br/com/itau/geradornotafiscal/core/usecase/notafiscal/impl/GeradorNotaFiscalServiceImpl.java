@@ -4,7 +4,6 @@ import br.com.itau.geradornotafiscal.core.domain.enums.Finalidade;
 import br.com.itau.geradornotafiscal.core.domain.enums.Regiao;
 import br.com.itau.geradornotafiscal.core.domain.notafiscal.ItemNotaFiscal;
 import br.com.itau.geradornotafiscal.core.domain.notafiscal.NotaFiscal;
-import br.com.itau.geradornotafiscal.core.domain.pedido.Item;
 import br.com.itau.geradornotafiscal.core.domain.pedido.Pedido;
 import br.com.itau.geradornotafiscal.core.domain.pedido.destino.Destinatario;
 import br.com.itau.geradornotafiscal.core.domain.pedido.destino.Endereco;
@@ -13,14 +12,13 @@ import br.com.itau.geradornotafiscal.core.usecase.entrega.EntregaService;
 import br.com.itau.geradornotafiscal.core.usecase.estoque.EstoqueService;
 import br.com.itau.geradornotafiscal.core.usecase.financeiro.FinanceiroService;
 import br.com.itau.geradornotafiscal.core.usecase.notafiscal.GeradorNotaFiscalService;
-import br.com.itau.geradornotafiscal.core.usecase.notafiscal.estrategia.PessoaFisicaAnemica;
+import br.com.itau.geradornotafiscal.core.usecase.notafiscal.pessoastrategy.PessoaFisicaAnemica;
 import br.com.itau.geradornotafiscal.core.usecase.registro.RegistroService;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class GeradorNotaFiscalServiceImpl implements GeradorNotaFiscalService {
@@ -31,7 +29,7 @@ public class GeradorNotaFiscalServiceImpl implements GeradorNotaFiscalService {
     public NotaFiscal gerarNotaFiscal(Pedido pedido) {
         double valorPercentual = this.fretePorRegiao(pedido, pedido.getDestinatario());
         List<ItemNotaFiscal> itemNotaFiscals = this.notaFiscalPessoaFisica(pedido);
-        return this.preparaSaidaNotaFiscal(pedido, valorPercentual,itemNotaFiscals );
+        return this.preparaSaidaNotaFiscal(pedido, valorPercentual, itemNotaFiscals );
     }
 
     private double fretePorRegiao(Pedido pedido, Destinatario destinatario) {
@@ -72,7 +70,8 @@ public class GeradorNotaFiscalServiceImpl implements GeradorNotaFiscalService {
     private NotaFiscal preparaSaidaNotaFiscal(Pedido pedido, double valorFreteComPercentual,
                                               List<ItemNotaFiscal> itemNotaFiscalList) {
 
-        Pedido pedidoFeito = mapeiaPedido(pedido);
+        Pedido pedidoFeito = mapeiaPedido(pedido, itemNotaFiscalList);
+
 
         NotaFiscal notaFiscal = NotaFiscal.builder()
                 .idNotaFiscal(UUID.randomUUID().toString())
@@ -94,16 +93,13 @@ public class GeradorNotaFiscalServiceImpl implements GeradorNotaFiscalService {
         return new PessoaFisicaAnemica().calcula(pedido, pedido.getDestinatario().getTipoPessoa());
     }
 
-    private Pedido mapeiaPedido(Pedido pedido) {
+    private Pedido mapeiaPedido(Pedido pedido, List<ItemNotaFiscal> itemNotaFiscalList) {
 
-        /**
-         * TODO
-         * CONTABILIZAR TOTAL DE ITENS POR QUANTIDADE E OBTER VALORES
-         */
-        AtomicInteger quantidadeTotalPorItem = new AtomicInteger();
-        pedido.getItens().stream().forEach(item -> {
-            quantidadeTotalPorItem.addAndGet(item.getQuantidade());
-        });
+
+        double valorItensQtd =
+                pedido.getItens().stream().mapToDouble(item -> {
+            return item.getValorUnitario() * item.getQuantidade();
+        }).sum();
 
         return new Pedido().builder().
                 idPedido(pedido.getIdPedido()).
@@ -111,8 +107,10 @@ public class GeradorNotaFiscalServiceImpl implements GeradorNotaFiscalService {
                 valorFrete(pedido.getValorFrete()).
                 itens(pedido.getItens()).
                 destinatario(pedido.getDestinatario()).
-                valorTotalItens(quantidadeTotalPorItem.get() * (
-                                pedido.getItens().stream().mapToDouble(Item::getValorUnitario).sum())).build();
+                valorTotalItens(valorItensQtd + pedido.getValorFrete()
+                + itemNotaFiscalList.stream().mapToDouble(nt -> {
+                    return nt.getValorTributoItem();
+                }).sum()).build();
 
     }
 }

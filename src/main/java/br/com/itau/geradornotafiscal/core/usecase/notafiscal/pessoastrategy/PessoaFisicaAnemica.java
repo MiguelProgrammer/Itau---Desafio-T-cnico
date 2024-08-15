@@ -1,8 +1,7 @@
-package br.com.itau.geradornotafiscal.core.usecase.notafiscal.estrategia;
+package br.com.itau.geradornotafiscal.core.usecase.notafiscal.pessoastrategy;
 
 import br.com.itau.geradornotafiscal.core.domain.enums.TipoPessoa;
 import br.com.itau.geradornotafiscal.core.domain.notafiscal.ItemNotaFiscal;
-import br.com.itau.geradornotafiscal.core.domain.pedido.Item;
 import br.com.itau.geradornotafiscal.core.domain.pedido.Pedido;
 import br.com.itau.geradornotafiscal.core.usecase.calculadora.CalculadoraAliquotaProduto;
 import br.com.itau.geradornotafiscal.core.usecase.notafiscal.TipoNotaFiscal;
@@ -22,12 +21,13 @@ public class PessoaFisicaAnemica implements TipoNotaFiscal {
             return calcularAliquota.calcularAliquota(pedido.getItens(),
                     this.calculaAliquota(pedido));
         }
+
         return new PessoaJuridicaAnemica().calcula(pedido, tipoPessoa);
     }
 
     private double calculaAliquota(Pedido pedido) {
 
-        double aliquota = 0;
+        double aliquota = 0.17;
 
         if (pedido.getValorTotalItens() <= 3500) {
             aliquota = 0.15;
@@ -38,7 +38,7 @@ public class PessoaFisicaAnemica implements TipoNotaFiscal {
         }
 
         if (pedido.getValorTotalItens() < 500) {
-            aliquota = 0.17;
+            aliquota = 0;
         }
 
         return aliquota;
