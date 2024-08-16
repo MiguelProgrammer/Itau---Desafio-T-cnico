@@ -24,8 +24,8 @@ Premissas:
 - Clean Code
 - Design Patterns
 - Cobertura de Testes
-- Documentação com Swagger
+- Swagger: <b>http://localhost:8080/swagger-ui/index<b/>
 - Dockerização e Compose: docker push <a href="https://hub.docker.com/r/migprogrammer/gerador-notafiscal">docker pull migprogrammer/gerador-notafiscal</a>
 
-Acesse documentação <b>http://localhost:8080/swagger-ui/index<b/>
+## Acesse documentação com aplicação rodando<br>
 <img src="https://i.imgur.com/haaGki7.png" width=600/>
