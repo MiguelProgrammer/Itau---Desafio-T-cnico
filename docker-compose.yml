@@ -1,7 +1,7 @@
 services:
 
   app:
-    image: migprogrammer/gerador-notafiscal:v1
+    image: migprogrammer/gerador-notafiscal:v2
     container_name: notafiscal-app
     ports:
       - "8080:8080"
