@@ -12,13 +12,14 @@ Desafio:
 - Para pedidos com mais de 6 itens, o tempo de processamento fica muito elevado
 - Após algumas execuções o retorno também fica muito lento
 - Existem reclamações de outros sistemas onde estão recebendo dados inconscientes relacionados aos valores da nota e total de itens
-
+<hr>
 Premissas:
 - O Payload de entrada não deve ser modificado
 - Algumas integrações têm seu tempo simulando uma chamada, então essa parte não pode simplesmente ser removida
 - A solução proposta deve resolver os problemas funcionais mencionados e melhorar a vida do desenvolvedor, demonstrando uma abordagem abrangente no fluxo de desenvolvimento e entrega de software.
+<hr>
 
-Solução dockerizada
+# Solução dockerizada
 - Refactoring para Clean Architecture
 - Clean Code
 - Design Patterns
