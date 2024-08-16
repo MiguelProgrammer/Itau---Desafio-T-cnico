@@ -1,0 +1,195 @@
+openapi: 3.0.0
+info:
+  title: Swagger Gerador Nota Fsical - OpenAPI 3.0
+  description: |-
+    Itau Challenge Project
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: miguel.silva@mackenzista.com.br
+  version: 0.0.2
+
+tags:
+
+  - name: gera-nota
+    description: "Gera nota fiscal para tipo de pessoa"
+
+paths:
+
+  /api/pedido/gerar-nota-fiscal:
+    post:
+      tags:
+        - gera-nota
+      summary: gera a nota fiscal do pedido
+      description: Retorna nota fiscal
+      operationId: gerarNotaFiscal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pedido'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotaFiscal'
+        '404':
+          description: Pedido não encontrado
+
+
+components:
+  schemas:
+
+    Pedido:
+      type: object
+      properties:
+        id_pedido:
+          type: integer
+        data:
+          type: string
+          format: date
+        valor_total_itens:
+          type: number
+          format: double
+        valor_frete:
+          type: number
+          format: double
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        destinatario:
+          $ref: '#/components/schemas/Destinatario'
+
+    Item:
+      type: object
+      properties:
+        id_item:
+          type: string
+        descricao:
+          type: string
+        valor_unitario:
+          type: number
+          format: double
+        quantidade:
+          type: integer
+
+    NotaFiscal:
+      type: object
+      properties:
+        id_nota_fiscal:
+          type: string
+        data:
+          type: string
+          format: date
+        valor_total_itens:
+          type: number
+          format: double
+        valor_frete:
+          type: number
+          format: double
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemNotaFiscal'
+        destinatario:
+          $ref: '#/components/schemas/Destinatario'
+
+    ItemNotaFiscal:
+      type: object
+      properties:
+        id_item:
+          type: string
+        descricao:
+          type: string
+        valorUnitario:
+          type: number
+          format: double
+        quantidade:
+          type: integer
+        valor_tributo_item:
+          type: number
+          format: double
+
+    Documento:
+      type: object
+      properties:
+        numero:
+          type: string
+        tipo:
+          $ref: '#/components/schemas/TipoDocumento'
+
+    TipoDocumento:
+      type: string
+      enum:
+        - CPF
+        - CNPJ
+
+    TipoPessoa:
+      type: string
+      enum:
+        - FISICA
+        - JURIDICA
+
+    RegimeTributacaoPJ:
+      type: string
+      enum:
+        - SIMPLES_NACIONAL
+        - LUCRO_REAL
+        - LUCRO_PRESUMIDO
+        - OUTROS
+
+    Destinatario:
+      type: object
+      properties:
+        nome:
+          type: string
+        tipo_pessoa:
+          $ref: '#/components/schemas/TipoPessoa'
+        regime_tributacao:
+          $ref: '#/components/schemas/RegimeTributacaoPJ'
+        documentos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Documento'
+        enderecos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Endereco'
+
+    Endereco:
+      type: object
+      properties:
+        cep:
+          type: string
+        logradouro:
+          type: string
+        numero:
+          type: string
+        estado:
+          type: string
+        complemento:
+          type: string
+        finalidade:
+          $ref: '#/components/schemas/Finalidade'
+        regiao:
+          $ref: '#/components/schemas/Regiao'
+
+    Finalidade:
+      type: string
+      enum:
+        - COBRANCA_ENTREGA
+        - ENTREGA
+        - COBRANCA
+        - OUTROS
+
+    Regiao:
+      type: string
+      enum:
+        - NORTE
+        - NORDESTE
+        - CENTRO_OESTE
+        - SUDESTE
+        - SUL

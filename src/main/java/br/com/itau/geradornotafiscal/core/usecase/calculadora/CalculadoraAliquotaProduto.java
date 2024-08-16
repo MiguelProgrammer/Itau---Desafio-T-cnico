@@ -15,10 +15,8 @@ public class CalculadoraAliquotaProduto {
         for (Item item : items) {
 
             ItemNotaFiscal itemNotaFiscal = ItemNotaFiscal.builder()
-                    .idItem(item.getIdItem())
-                    .descricao(item.getDescricao())
-                    .valorUnitario(item.getValorUnitario())
-                    .quantidade(item.getQuantidade())
+                    .idItem(item.getIdItem()).descricao(item.getDescricao())
+                    .valorUnitario(item.getValorUnitario()).quantidade(item.getQuantidade())
                     .valorTributoItem(item.getValorUnitario() * aliquotaPercentual)
                     .build();
 

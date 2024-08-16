@@ -9,23 +9,34 @@ import br.com.itau.geradornotafiscal.core.domain.pedido.Item;
 import br.com.itau.geradornotafiscal.core.domain.pedido.Pedido;
 import br.com.itau.geradornotafiscal.core.domain.pedido.destino.Destinatario;
 import br.com.itau.geradornotafiscal.core.domain.pedido.destino.Endereco;
+import br.com.itau.geradornotafiscal.core.usecase.notafiscal.TipoNotaFiscal;
 import br.com.itau.geradornotafiscal.core.usecase.notafiscal.impl.GeradorNotaFiscalServiceImpl;
+import br.com.itau.geradornotafiscal.core.usecase.notafiscal.pessoastrategy.PessoaFisicaAnemica;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GeradorControllerNotaFiscalServiceImplTest {
 
+    @Mock
+    TipoNotaFiscal tipoNotaFiscal = new PessoaFisicaAnemica();
+
     @InjectMocks
-    private GeradorNotaFiscalServiceImpl geradorNotaFiscalService;
+    private GeradorNotaFiscalServiceImpl geradorNotaFiscalService
+            = new GeradorNotaFiscalServiceImpl(tipoNotaFiscal);
 
     @BeforeEach
     public void setup() {
+        TipoNotaFiscal tipoNotaFiscal;
         MockitoAnnotations.openMocks(this);
     }
 
@@ -50,13 +61,15 @@ public class GeradorControllerNotaFiscalServiceImplTest {
         Item item = new Item();
         item.setValorUnitario(100);
         item.setQuantidade(4);
-        pedido.setItens(Arrays.asList(item));
+        List<Item> itens = new ArrayList<>();
+        itens.add(item);
+        pedido.setItens(itens);
 
         NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido);
 
-        assertEquals(pedido.getValorTotalItens() + pedido.getValorFrete(), notaFiscal.getValorTotalItens());
-        assertEquals(1, notaFiscal.getItens().size());
-        assertEquals(0, notaFiscal.getItens().get(0).getValorTributoItem());
+        assertEquals(pedido.getValorFrete() + pedido.getValorTotalItens(), notaFiscal.getValorTotalItens());
+        assertEquals(1, pedido.getItens().size());
+        assertEquals(Boolean.TRUE, notaFiscal.getItens().isEmpty());
     }
 
     @Test
@@ -84,16 +97,9 @@ public class GeradorControllerNotaFiscalServiceImplTest {
 
         NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido);
 
-        double valorItensQtd =
-                notaFiscal.getItens().stream().mapToDouble(it ->
-                        (pedido.getValorFrete() +
-                                it.getValorUnitario() *
-                                        it.getQuantidade()) +
-                                it.getValorTributoItem()).sum();
-
-        assertEquals(valorItensQtd, notaFiscal.getValorTotalItens());
-        assertEquals(1, notaFiscal.getItens().size());
-        assertEquals(0.20 * item.getValorUnitario(), notaFiscal.getItens().get(0).getValorTributoItem());
+        assertEquals(pedido.getValorTotalItens() + pedido.getValorFrete(), notaFiscal.getValorTotalItens());
+        assertEquals(1, pedido.getItens().size());
+        assertEquals(item.getValorUnitario(), pedido.getItens().get(0).getValorUnitario());
     }
 
 }

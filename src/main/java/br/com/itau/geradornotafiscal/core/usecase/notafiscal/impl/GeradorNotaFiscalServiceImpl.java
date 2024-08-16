@@ -12,35 +12,45 @@ import br.com.itau.geradornotafiscal.core.usecase.entrega.EntregaService;
 import br.com.itau.geradornotafiscal.core.usecase.estoque.EstoqueService;
 import br.com.itau.geradornotafiscal.core.usecase.financeiro.FinanceiroService;
 import br.com.itau.geradornotafiscal.core.usecase.notafiscal.GeradorNotaFiscalService;
-import br.com.itau.geradornotafiscal.core.usecase.notafiscal.pessoastrategy.PessoaFisicaAnemica;
+import br.com.itau.geradornotafiscal.core.usecase.notafiscal.TipoNotaFiscal;
 import br.com.itau.geradornotafiscal.core.usecase.registro.RegistroService;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Component
 public class GeradorNotaFiscalServiceImpl implements GeradorNotaFiscalService {
 
+    private TipoNotaFiscal tipoNotaFiscal;
     private CalculadoraAliquotaProduto calculadoraAliquotaProduto;
+
+    public GeradorNotaFiscalServiceImpl(TipoNotaFiscal tipoNotaFiscal) {
+        this.tipoNotaFiscal = tipoNotaFiscal;
+    }
 
     @Override
     public NotaFiscal gerarNotaFiscal(Pedido pedido) {
         double valorPercentual = this.fretePorRegiao(pedido, pedido.getDestinatario());
-        List<ItemNotaFiscal> itemNotaFiscals = this.notaFiscalPessoaFisica(pedido);
-        return this.preparaSaidaNotaFiscal(pedido, valorPercentual, itemNotaFiscals );
+        List<ItemNotaFiscal> nf = new ArrayList<>();
+        nf = tipoNotaFiscal.calcula(pedido, pedido.getDestinatario().getTipoPessoa());
+        return preparaSaidaNotaFiscal(pedido, valorPercentual, nf);
     }
 
     private double fretePorRegiao(Pedido pedido, Destinatario destinatario) {
 
         Regiao regiao = destinatario.getEnderecos()
-                .stream()
-                .filter(endereco -> endereco.getFinalidade() == Finalidade.ENTREGA ||
+                .stream().filter(endereco -> endereco.getFinalidade() == Finalidade.ENTREGA ||
                         endereco.getFinalidade() == Finalidade.COBRANCA_ENTREGA)
                 .map(Endereco::getRegiao)
                 .findFirst().orElse(null);
 
+        return calculaFrete(pedido, regiao);
+    }
+
+    private static double calculaFrete(Pedido pedido, Regiao regiao) {
         double valorFrete = pedido.getValorFrete();
         double valorFreteComPercentual = 0;
 
@@ -70,16 +80,13 @@ public class GeradorNotaFiscalServiceImpl implements GeradorNotaFiscalService {
     private NotaFiscal preparaSaidaNotaFiscal(Pedido pedido, double valorFreteComPercentual,
                                               List<ItemNotaFiscal> itemNotaFiscalList) {
 
-        Pedido pedidoFeito = mapeiaPedido(pedido, itemNotaFiscalList);
-
+        pedido = mapeiaPedido(pedido, itemNotaFiscalList);
 
         NotaFiscal notaFiscal = NotaFiscal.builder()
                 .idNotaFiscal(UUID.randomUUID().toString())
-                .data(LocalDateTime.now())
-                .valorTotalItens(pedidoFeito.getValorTotalItens())
-                .valorFrete(valorFreteComPercentual)
-                .itens(itemNotaFiscalList)
-                .destinatario(pedidoFeito.getDestinatario())
+                .data(LocalDateTime.now()).valorTotalItens(pedido.getValorTotalItens())
+                .valorFrete(valorFreteComPercentual).itens(itemNotaFiscalList)
+                .destinatario(pedido.getDestinatario())
                 .build();
 
         new EstoqueService().enviarNotaFiscalParaBaixaEstoque(notaFiscal);
@@ -89,15 +96,9 @@ public class GeradorNotaFiscalServiceImpl implements GeradorNotaFiscalService {
         return notaFiscal;
     }
 
-    private List<ItemNotaFiscal> notaFiscalPessoaFisica(Pedido pedido) {
-        return new PessoaFisicaAnemica().calcula(pedido, pedido.getDestinatario().getTipoPessoa());
-    }
-
     private Pedido mapeiaPedido(Pedido pedido, List<ItemNotaFiscal> itemNotaFiscalList) {
 
-
-        double valorItensQtd =
-                pedido.getItens().stream().mapToDouble(item -> {
+        double valorItensQtd = pedido.getItens().stream().mapToDouble(item -> {
             return item.getValorUnitario() * item.getQuantidade();
         }).sum();
 
@@ -108,7 +109,7 @@ public class GeradorNotaFiscalServiceImpl implements GeradorNotaFiscalService {
                 itens(pedido.getItens()).
                 destinatario(pedido.getDestinatario()).
                 valorTotalItens(valorItensQtd + pedido.getValorFrete()
-                + itemNotaFiscalList.stream().mapToDouble(nt -> {
+                        + itemNotaFiscalList.stream().mapToDouble(nt -> {
                     return nt.getValorTributoItem();
                 }).sum()).build();
 

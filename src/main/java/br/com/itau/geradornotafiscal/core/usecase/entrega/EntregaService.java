@@ -11,10 +11,12 @@ public class EntregaService {
         try {
             //Simula o agendamento da entrega
             Thread.sleep(150);
-            new EntregaIntegrationPort().criarAgendamentoEntrega(notaFiscal);
+            Thread thread = new Thread(new EntregaIntegrationPort(notaFiscal));
+            thread.start();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
     }
+
 }

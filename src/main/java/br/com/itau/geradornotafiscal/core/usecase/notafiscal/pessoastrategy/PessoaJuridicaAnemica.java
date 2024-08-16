@@ -14,31 +14,51 @@ import java.util.List;
 @Component
 public class PessoaJuridicaAnemica implements TipoNotaFiscal {
 
+    List<ItemNotaFiscal> itemNotaFiscals = new ArrayList<>();
     private CalculadoraAliquotaProduto calcularAliquota = new CalculadoraAliquotaProduto();
+
+    /**
+     * RESOURCES
+     * @param pedido
+     * @param tipoPessoa
+     * @return
+     */
 
     @Override
     public List<ItemNotaFiscal> calcula(Pedido pedido, TipoPessoa tipoPessoa) {
 
-        List<ItemNotaFiscal> itemNotaFiscals = new ArrayList<>();
         RegimeTributacaoPJ regimeTributacao = pedido.getDestinatario().getRegimeTributacao();
 
         if (tipoPessoa.equals(TipoPessoa.JURIDICA)) {
-
-            if (regimeTributacao == RegimeTributacaoPJ.SIMPLES_NACIONAL) {
-                itemNotaFiscals = this.calcularAliquota.calcularAliquota(pedido.getItens(), this.calculaAliquoteSN(pedido));
-            }
-
-            if (regimeTributacao == RegimeTributacaoPJ.LUCRO_REAL) {
-                itemNotaFiscals =  this.calcularAliquota.calcularAliquota(pedido.getItens(), this.calculaAliquotaLR(pedido));
-            }
-
-            if (regimeTributacao == RegimeTributacaoPJ.LUCRO_PRESUMIDO) {
-                itemNotaFiscals = calcularAliquota.calcularAliquota(pedido.getItens(),
-                        this.calculaAliquotaLP(pedido));
-            }
-
+            itemNotaFiscals = selecionaTipoTributacao(pedido, regimeTributacao, itemNotaFiscals);
+        } else {
+            itemNotaFiscals = new PessoaFisicaAnemica().calcula(pedido, TipoPessoa.FISICA);
         }
 
+        return itemNotaFiscals;
+    }
+
+
+    /**
+     * INTERNAL CLASS SERVICES
+     * @param pedido
+     * @return
+     */
+
+
+    private List<ItemNotaFiscal> selecionaTipoTributacao(Pedido pedido, RegimeTributacaoPJ regimeTributacao, List<ItemNotaFiscal> itemNotaFiscals) {
+        if (regimeTributacao == RegimeTributacaoPJ.SIMPLES_NACIONAL) {
+            itemNotaFiscals = this.calcularAliquota.calcularAliquota(pedido.getItens(), this.calculaAliquoteSN(pedido));
+        }
+
+        if (regimeTributacao == RegimeTributacaoPJ.LUCRO_REAL) {
+            itemNotaFiscals =  this.calcularAliquota.calcularAliquota(pedido.getItens(), this.calculaAliquotaLR(pedido));
+        }
+
+        if (regimeTributacao == RegimeTributacaoPJ.LUCRO_PRESUMIDO) {
+            itemNotaFiscals = calcularAliquota.calcularAliquota(pedido.getItens(),
+                    this.calculaAliquotaLP(pedido));
+        }
         return itemNotaFiscals;
     }
 

@@ -24,8 +24,6 @@ public class GeradorNFController {
 	@PostMapping("/gerar-nota-fiscal")
 	public ResponseEntity<NotaFiscal> gerarNotaFiscal(@RequestBody Pedido pedido) {
 		NotaFiscal notaFiscal = geradorController.gerarNota(pedido);
-		String mensagem = "Nota fiscal gerada com sucesso para o pedido: " + pedido.getIdPedido();
-		System.out.println(mensagem);
 		return new ResponseEntity<>(notaFiscal, HttpStatus.OK);
 	}
 	

@@ -5,26 +5,32 @@ import br.com.itau.geradornotafiscal.core.domain.notafiscal.ItemNotaFiscal;
 import br.com.itau.geradornotafiscal.core.domain.pedido.Pedido;
 import br.com.itau.geradornotafiscal.core.usecase.calculadora.CalculadoraAliquotaProduto;
 import br.com.itau.geradornotafiscal.core.usecase.notafiscal.TipoNotaFiscal;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public class PessoaFisicaAnemica implements TipoNotaFiscal {
 
     private CalculadoraAliquotaProduto calcularAliquota = new CalculadoraAliquotaProduto();
 
+    /**
+     * RESOURCES
+     *
+     * @param pedido
+     * @param tipoPessoa
+     * @return
+     */
+
     @Override
     public List<ItemNotaFiscal> calcula(Pedido pedido, TipoPessoa tipoPessoa) {
-
-        if (tipoPessoa.equals(TipoPessoa.FISICA)) {
-            return calcularAliquota.calcularAliquota(pedido.getItens(),
-                    this.calculaAliquota(pedido));
-        }
-
-        return new PessoaJuridicaAnemica().calcula(pedido, tipoPessoa);
+        return calcularAliquota.calcularAliquota(pedido.getItens(), this.calculaAliquota(pedido));
     }
 
+    /**
+     * INTERNAL CLASS SERVICES
+     *
+     * @param pedido
+     * @return
+     */
     private double calculaAliquota(Pedido pedido) {
 
         double aliquota = 0.17;

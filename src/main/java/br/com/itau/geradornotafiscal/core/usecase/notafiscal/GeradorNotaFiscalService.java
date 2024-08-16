@@ -5,6 +5,6 @@ import br.com.itau.geradornotafiscal.core.domain.pedido.Pedido;
 
 public interface GeradorNotaFiscalService{
 
-	NotaFiscal gerarNotaFiscal(Pedido pedido);
+	 NotaFiscal gerarNotaFiscal(Pedido pedido);
 	
 }
