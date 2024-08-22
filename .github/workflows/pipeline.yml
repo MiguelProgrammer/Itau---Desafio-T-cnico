@@ -1,9 +1,8 @@
 name: pipeline
-
 on:
   push:
 
-Jobs:
+jobs:
   
   build:
     runs-on: ubuntu-latest
