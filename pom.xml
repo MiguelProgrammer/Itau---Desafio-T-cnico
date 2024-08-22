@@ -167,4 +167,11 @@
 
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>miguelprogrammer-git</id>
+            <url>https://github.com/MiguelProgrammer/Itau-desafio-tecnico</url>
+        </repository>
+    </distributionManagement>
+
 </project>
