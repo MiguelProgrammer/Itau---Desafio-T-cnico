@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-alpine
+FROM adoptopenjdk/openjdk11
 LABEL authors="Miguel Silva - Desafio Itau"
 RUN mkdir /app
 WORKDIR /app
