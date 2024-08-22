@@ -30,7 +30,7 @@ jobs:
 
       - name: Publish package
         run: mvn --batch-mode deploy
-      - name: Log into Docker Hub
-        run: docker login -u migprogrammer -p ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Push image to Docker Hub
-        run: docker push migprogrammer/gerador-notafiscal:latest
+#      - name: Log into Docker Hub
+#        run: docker login -u migprogrammer -p ${{ secrets.DOCKERHUB_TOKEN }}
+#      - name: Push image to Docker Hub
+#        run: docker push migprogrammer/gerador-notafiscal:latest
