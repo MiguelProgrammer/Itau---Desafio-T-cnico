@@ -111,15 +111,6 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
                 <version>3.1.2</version>
             </plugin>
@@ -182,8 +173,8 @@
         <repository>
             <uniqueVersion>false</uniqueVersion>
             <id>corp1</id>
-            <name>Corporate Repository</name>
-            <url>https://repo1.maven.org/</url>
+            <name>mothership-sandbox-releases</name>
+            <url>https://next-ui.jfrog.info/artifactory/libs-release-local</url>
             <layout>default</layout>
         </repository>
     </distributionManagement>
