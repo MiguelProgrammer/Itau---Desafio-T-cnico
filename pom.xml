@@ -194,14 +194,14 @@
 
     </build>
 
-    <distributionManagement>
-        <repository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>corp1</id>
-            <name>mothership-sandbox-releases</name>
-            <url>https://next-ui.jfrog.info/artifactory/libs-release-local</url>
-            <layout>default</layout>
-        </repository>
-    </distributionManagement>
+<!--    <distributionManagement>-->
+<!--        <repository>-->
+<!--            <uniqueVersion>false</uniqueVersion>-->
+<!--            <id>corp1</id>-->
+<!--            <name>mothership-sandbox-releases</name>-->
+<!--            <url>https://next-ui.jfrog.info/artifactory/libs-release-local</url>-->
+<!--            <layout>default</layout>-->
+<!--        </repository>-->
+<!--    </distributionManagement>-->
 
 </project>
