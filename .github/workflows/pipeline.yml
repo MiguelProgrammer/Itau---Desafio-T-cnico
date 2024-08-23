@@ -39,9 +39,35 @@ jobs:
       name: stg
     needs: publish
 
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/developer'
     steps:
       - name: Deploy
         shell: bash
         run: | 
           echo 'Deploy em developer OK!'
+
+  deploy-Pre:
+    runs-on: ubuntu-latest
+    environment:
+      name: stg
+    needs: publish
+
+    if: github.ref == 'refs/heads/release'
+    steps:
+      - name: Deploy
+        shell: bash
+        run: |
+          echo 'Deploy em release OK!'
+
+  deploy-Prod:
+    runs-on: ubuntu-latest
+    environment:
+      name: stg
+    needs: publish
+
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy
+        shell: bash
+        run: |
+          echo 'Deploy em production OK!'
